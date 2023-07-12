@@ -1,0 +1,65 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspace": {
+      "type": "String"
+    }
+  },
+  "resources": [
+    {
+      "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/5f6a3357-5b98-4a9a-836d-baaa1fc1d62e')]",
+      "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/5f6a3357-5b98-4a9a-836d-baaa1fc1d62e')]",
+      "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+      "kind": "Scheduled",
+      "apiVersion": "2023-02-01-preview",
+      "properties": {
+        "displayName": "Cloudflare - Unexpected POST requests",
+        "description": "Detects post requests to unusual extensions.",
+        "alertDetailsOverride": null,
+        "customDetails": null,
+        "entityMappings": [
+          {
+            "entityType": "IP",
+            "fieldMappings": [
+              {
+                "columnName": "IPCustomEntity",
+                "identifier": "Address"
+              }
+            ]
+          }
+        ],
+        "eventGroupingSettings": null,
+        "incidentConfiguration": {
+          "createIncident": true,
+          "groupingConfiguration": {
+            "enabled": false,
+            "groupByAlertDetails": null,
+            "groupByCustomDetails": null,
+            "groupByEntities": [],
+            "lookbackDuration": "PT5M",
+            "matchingMethod": "AllEntities",
+            "reopenClosedIncident": false
+          }
+        },
+        "query": "Cloudflare\n| where HttpRequestMethod in~ ('POST', 'PUT')\n| where tostring(HttpStatusCode) startswith '2'\n| where DstBytes != 0 or SrcBytes != 0\n| extend fe = extract(@'.*(\\.\\w+)$', 1, ClientRequestURI)\n| where fe in~ ('.jpg', '.jpeg', '.gif', '.png', '.icon', '.ico', '.xml', '.swf', '.svg', '.ppt', '.pttx', '.doc', '.docx', '.rtf', '.pdf', '.tif', '.zip', '.mov')\n| extend IPCustomEntity = SrcIpAddr\n",
+        "queryPeriod": "PT1H",
+        "queryFrequency": "PT1H",
+        "sentinelEntitiesMappings": null,
+        "severity": "Medium",
+        "suppressionDuration": "PT1H",
+        "suppressionEnabled": false,
+        "tactics": [
+          "Persistence",
+          "CommandAndControl"
+        ],
+        "techniques": null,
+        "templateVersion": null,
+        "triggerOperator": "GreaterThan",
+        "triggerThreshold": 0,
+        "alertRuleTemplateName": null,
+        "enabled": false
+      }
+    }
+  ]
+}
