@@ -1,0 +1,24 @@
+FileName, CommitSha
+SentinelExported-AnalyticsRule/AzureActivity.json,641da38b2255ef38ce1a900124039004133ae8e6
+SentinelExported-AnalyticsRule/Known IRIDIUM IP.json,ada83bb70d6b902f4aa9229b172a074e0e0d75ed
+SentinelExported-AnalyticsRule/AlertRule01.json,3ae5225c625d2231311933bd84547195fa656f0b
+SentinelExported-AnalyticsRule/Cloudflare - Unexpected URI.json,759eaec0e19887e910e925ac37f28713c455ea74
+SentinelExported-AnalyticsRule/Cloudflare - XSS probing pattern in request.json,392d7ff37dd8dda447e739f5cb16a4f5b0ba2104
+SentinelExported-AnalyticsRule/Cloudflare - Multiple error requests from single source.json,526557f966391a7be2257676589d9b1d63677637
+SentinelExported-AnalyticsRule/Cloudflare - Unexpected client request.json,320168ef90fbcff4cbd0adf94e87987fcb4c2195
+SentinelExported-AnalyticsRule/Cloudflare - WAF Allowed threat.json,055b733a2c91579cc2f6211489674b25b817655c
+Azure_Sentinel_analytic_rule (1).json,d290442fedffb7a28315aa7b5967a7008d3b1003
+SentinelExported-AnalyticsRule/Cloudflare - Bad client IP.json,28696ee9cc81135b87a496a1b54dcf8c461dc9ff
+SentinelExported-AnalyticsRule/test.json,892d89939ec903e3e8d2ff234706beef0df1ccd1
+SentinelExported-AnalyticsRule/Sign-ins from IPs that attempt sign-ins to disabled accounts.json,e347f472080111d07b8a3ec841beeef3dd9d59e7
+SentinelExported-AnalyticsRule/Cloudflare - Client request from country in blocklist.json,bbfdaabf41e1b9a2ffdc2bf87747f5eed0fc0017
+SentinelExported-AnalyticsRule/Known IRIDIUM IP (1) (2) (3).json,d3097775cf50d9ef1908eb24b779529f5668135e
+SentinelExported-AnalyticsRule/Advanced Multistage Attack Detection.json,583425949c000e9c0fea4a8540701126f26fa26b
+SentinelExported-AnalyticsRule/Cloudflare - Unexpected POST requests.json,4d9fff2adca0674bc129da2a545ecba553ab3e52
+SentinelExported-AnalyticsRule/Cloudflare - Multiple user agents for single source.json,b749fd92ed87700a5e7cc99a6701d7f877625736
+SentinelExported-AnalyticsRule/Create incidents based on Azure Active Directory Identity Protection alerts.json,b748f964ab2c089311b3df4eeae938b8048ea6e1
+SentinelExported-AnalyticsRule/AlertRule02.json,20b49d87286bb4281ae8945c6a20ee7f4a935b34
+SentinelExported-AnalyticsRule/Create incidents based on Microsoft Defender for Office 365 alerts.json,791f6d7179d561ce71b5a22eb51364b70ab07aa0
+SentinelExported-AnalyticsRule/Cloudflare - Empty user agent.json,d893f4ea2c39dee16b297be90d991230fd95d53a
+SentinelExported-AnalyticsRule/Known IRIDIUM IP (1) (2).json,ecc88e3ef943867ca9875c4393470c03307f62d0
+SentinelExported-AnalyticsRule/Known IRIDIUM IP (1).json,1cd7efb97f31cde8f662b079fa6a187c7fc4c66e
