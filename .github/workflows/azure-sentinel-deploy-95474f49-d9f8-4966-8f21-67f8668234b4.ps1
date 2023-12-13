@@ -20,6 +20,7 @@ $githubAuthToken = $Env:githubAuthToken
 $githubRepository = $Env:GITHUB_REPOSITORY
 $branchName = $Env:branch
 $smartDeployment = $Env:smartDeployment
+$newResourceBranch = $branchName + "-sentinel-deployment"
 $csvPath = "$rootDirectory\.sentinel\tracking_table_$sourceControlId.csv"
 $configPath = "$rootDirectory\sentinel-deployment.config"
 $global:localCsvTablefinal = @{}
@@ -113,13 +114,6 @@ function GetGithubTree {
     return $getTreeResponse
 }
 
-#Gets blob commit sha of the csv file, used when updating csv file to repo 
-function GetCsvCommitSha($getTreeResponse) {
-    $relativeCsvPath = RelativePathWithBackslash $csvPath
-    $shaObject = $getTreeResponse.tree | Where-Object { $_.path -eq $relativeCsvPath }
-    return $shaObject.sha
-}
-
 #Creates a table using the reponse from the tree api, creates a table 
 function GetCommitShaTable($getTreeResponse) {
     $shaTable = @{}
@@ -133,28 +127,26 @@ function GetCommitShaTable($getTreeResponse) {
     return $shaTable
 }
 
-#Pushes new/updated csv file to the user's repository. If updating file, will need csv commit sha. 
-function PushCsvToRepo($getTreeResponse) {
-    $relativeCsvPath = RelativePathWithBackslash $csvPath
-    $sha = GetCsvCommitSha $getTreeResponse
-    $createFileUrl = "https://api.github.com/repos/$githubRepository/contents/$relativeCsvPath"
+function PushCsvToRepo() {
     $content = ConvertTableToString
-    $encodedContent = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($content))
-    
-    $body = @{
-        message = "trackingTable.csv created."
-        content = $encodedContent
-        branch = $branchName
-        sha = $sha
-    } | ConvertTo-Json
+    $relativeCsvPath = RelativePathWithBackslash $csvPath
+    $resourceBranchExists = git ls-remote --heads "https://github.com/$githubRepository" $newResourceBranch | wc -l 
 
-    $Parameters = @{
-        Method      = "PUT"
-        Uri         = $createFileUrl
-        Headers     = $header
-        Body        = $body | ConvertTo-Json
+    if ($resourceBranchExists -eq 0) {
+        git switch --orphan $newResourceBranch
+        git commit --allow-empty -m "Initial commit on orphan branch"
+        git push -u origin $newResourceBranch
+        New-Item -ItemType "directory" -Path ".sentinel"
+    } else {
+        git fetch > $null
+        git checkout $newResourceBranch
     }
-    AttemptInvokeRestMethod "Put" $createFileUrl $body $null 3
+    
+    Write-Output $content > $relativeCsvPath
+    git add $relativeCsvPath
+    git commit -m "Modified tracking table"
+    git push -u origin $newResourceBranch
+    git checkout $branchName
 }
 
 function ReadCsvToTable {
@@ -515,7 +507,7 @@ function Deployment($fullDeploymentFlag, $remoteShaTable, $tree) {
                 }
             }
         }
-        PushCsvToRepo $tree
+        PushCsvToRepo
         if ($totalFiles -gt 0 -and $totalFailed -gt 0) 
         {
             $err = "$totalFailed of $totalFiles deployments failed."
@@ -557,30 +549,53 @@ function SmartDeployment($fullDeploymentFlag, $remoteShaTable, $path, $parameter
     }
 }
 
+function TryGetCsvFile {
+    if (Test-Path $csvPath) {
+        $global:localCsvTablefinal = ReadCsvToTable
+        Remove-Item -Path $csvPath
+        git add $csvPath
+        git commit -m "Removed tracking file and moved to new sentinel created branch"
+        git push origin $branchName
+    }
+
+    $relativeCsvPath = RelativePathWithBackslash $csvPath
+    $resourceBranchExists = git ls-remote --heads "https://github.com/$githubRepository" $newResourceBranch | wc -l 
+    
+    if ($resourceBranchExists -eq 1) {
+        git fetch > $null
+        git checkout $newResourceBranch
+        
+        if (Test-Path $relativeCsvPath) {
+            $global:localCsvTablefinal = ReadCsvToTable
+        }
+        git checkout $branchName
+    }
+}
+
 function main() {
+    git config --global user.email "donotreply@microsoft.com"
+    git config --global user.name "Sentinel"
+
     if ($CloudEnv -ne 'AzureCloud') 
     {
         Write-Output "Attempting Sign In to Azure Cloud"
         ConnectAzCloud
     }
 
-    if (Test-Path $csvPath) {
-        $global:localCsvTablefinal = ReadCsvToTable
-    }
-
+    TryGetCsvFile
     LoadDeploymentConfig
-
     $tree = GetGithubTree
     $remoteShaTable = GetCommitShaTable $tree
 
     $existingConfigSha = $global:localCsvTablefinal[$configPath]
     $remoteConfigSha = $remoteShaTable[$configPath]
     $modifiedConfig = ($existingConfigSha -xor $remoteConfigSha) -or ($existingConfigSha -and $remoteConfigSha -and ($existingConfigSha -ne $remoteConfigSha))
+    
     if ($remoteConfigSha) {
         $global:updatedCsvTable[$configPath] = $remoteConfigSha
     }
 
-    $fullDeploymentFlag = $modifiedConfig -or (-not (Test-Path $csvPath)) -or ($smartDeployment -eq "false")
+    $fullDeploymentFlag = $modifiedConfig -or ($smartDeployment -eq "false")
     Deployment $fullDeploymentFlag $remoteShaTable $tree
 }
 
