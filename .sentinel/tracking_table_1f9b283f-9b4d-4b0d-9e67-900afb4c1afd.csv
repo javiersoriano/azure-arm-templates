@@ -1,0 +1,12 @@
+FileName, CommitSha
+SentinelExported-AnalyticsRule/Cloudflare - Unexpected client request.json,320168ef90fbcff4cbd0adf94e87987fcb4c2195
+SentinelExported-AnalyticsRule/AzureActivity.json,641da38b2255ef38ce1a900124039004133ae8e6
+SentinelExported-AnalyticsRule/Cloudflare - Multiple error requests from single source.json,526557f966391a7be2257676589d9b1d63677637
+SentinelExported-AnalyticsRule/AlertRule01.json,3ae5225c625d2231311933bd84547195fa656f0b
+SentinelExported-AnalyticsRule/Cloudflare - Multiple user agents for single source.json,b749fd92ed87700a5e7cc99a6701d7f877625736
+SentinelExported-AnalyticsRule/(Preview) Anomalous SSH Login Detection.json,458dc83550bdd29ee933cd44df65925d01689fad
+SentinelExported-AnalyticsRule/Cloudflare - Bad client IP.json,28696ee9cc81135b87a496a1b54dcf8c461dc9ff
+SentinelExported-AnalyticsRule/Cloudflare - Client request from country in blocklist.json,bbfdaabf41e1b9a2ffdc2bf87747f5eed0fc0017
+SentinelExported-AnalyticsRule/Advanced Multistage Attack Detection.json,583425949c000e9c0fea4a8540701126f26fa26b
+SentinelExported-AnalyticsRule/Cloudflare - Empty user agent.json,d893f4ea2c39dee16b297be90d991230fd95d53a
+
